@@ -17,10 +17,9 @@ parser.add_argument(
 parser.add_argument(
     "--pdb_list", type=str,default='', help="Path to a text file that includes a list of PDB codes along with chains, example 1ABC_A_B", required=False
 )
-
-tmp_dir = Path('./tmp')
-pdb_dir = Path('./pdbs')
-npy_dir = Path('./npys')
+parser.add_argument("-t", "--tmp_dir", type=Path, default=Path("./tmp"))
+parser.add_argument("-p", "--pdb_dir", type=Path, default=Path("./pdbs"))
+parser.add_argument("-n", "--npy_dir", type=Path, default=Path("./npys"))
 
 PROTEIN_LETTERS = [x.upper() for x in IUPACData.protein_letters_3to1.keys()]
 
@@ -128,6 +127,9 @@ def get_single(pdb_id: str,chains: list):
 
 if __name__ == '__main__':
     args = parser.parse_args()
+    tmp_dir = args.tmp_dir
+    pdb_dir = args.pdb_dir
+    npy_dir = args.npy_dir
     if args.pdb != '':
         pdb_id = args.pdb.split('_')
         chains = pdb_id[1:]
