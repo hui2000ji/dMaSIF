@@ -17,3 +17,5 @@ data_analysis/roc_curves
 data_analysis/.ipynb_checkpoints/
 .ipynb_checkpoints/
 __pycache__
+*.pdb
+*.npy

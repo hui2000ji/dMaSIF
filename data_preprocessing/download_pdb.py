@@ -112,9 +112,9 @@ def get_single(pdb_id: str,chains: list):
         pdbl = PDBList()
         pdb_filename = pdbl.retrieve_pdb_file(pdb_id, pdir=tmp_dir,file_format='pdb')
 
-        ##### Protonate with reduce, if hydrogens included.
-        # - Always protonate as this is useful for charges. If necessary ignore hydrogens later.
-        protonate(pdb_filename, protonated_file)
+    ##### Protonate with reduce, if hydrogens included.
+    # - Always protonate as this is useful for charges. If necessary ignore hydrogens later.
+    protonate(pdb_filename, protonated_file)
 
     pdb_filename = protonated_file
 
