@@ -1,9 +1,8 @@
 import Bio
 from Bio.PDB import * 
 from Bio.SeqUtils import IUPACData
-import sys
-import importlib
-import os
+import shutil
+from tqdm import tqdm
 import numpy as np
 from subprocess import Popen, PIPE
 from pathlib import Path
@@ -107,13 +106,15 @@ def protonate(in_pdb_file, out_pdb_file):
 def get_single(pdb_id: str, chains: list):
     protonated_file = pdb_dir/f"{pdb_id}.pdb"
     if not protonated_file.exists():
-        # Download pdb 
-        pdbl = PDBList()
-        pdb_filename = pdbl.retrieve_pdb_file(pdb_id, pdir=tmp_dir,file_format='pdb')
+        pdb_filename = tmp_dir / f"{pdb_id}.pdb"
+        if not pdb_filename.exists():
+            # Download pdb 
+            pdbl = PDBList()
+            pdb_filename = pdbl.retrieve_pdb_file(pdb_id, pdir=tmp_dir,file_format='pdb')
 
-    ##### Protonate with reduce, if hydrogens included.
-    # - Always protonate as this is useful for charges. If necessary ignore hydrogens later.
-    protonate(pdb_filename, protonated_file)
+        ##### Protonate with reduce, if hydrogens included.
+        # - Always protonate as this is useful for charges. If necessary ignore hydrogens later.
+        protonate(pdb_filename, protonated_file)
 
     pdb_filename = protonated_file
 
@@ -149,7 +150,7 @@ if __name__ == '__main__':
     elif args.pdb_list != '':
         with open(args.pdb_list) as f:
             pdb_list = f.read().splitlines()
-        for pdb_id in pdb_list:
+        for pdb_id in tqdm(pdb_list):
            pdb_id = pdb_id.split('_')
            chains = pdb_id[1:]
            pdb_id = pdb_id[0]
