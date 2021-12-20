@@ -84,6 +84,6 @@ info = iterate(
     save_path=save_predictions_path,
     pdb_ids=test_pdb_ids,
 )
-
+print(info)
 #np.save(f"timings/{args.experiment_name}_convtime.npy", info["conv_time"])
 #np.save(f"timings/{args.experiment_name}_memoryusage.npy", info["memory_usage"])
