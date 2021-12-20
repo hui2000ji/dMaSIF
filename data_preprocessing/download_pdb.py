@@ -130,6 +130,9 @@ if __name__ == '__main__':
     tmp_dir = args.tmp_dir
     pdb_dir = args.pdb_dir
     npy_dir = args.npy_dir
+    tmp_dir.mkdir(parents=True, exist_ok=True)
+    pdb_dir.mkdir(parents=True, exist_ok=True)
+    npy_dir.mkdir(parents=True, exist_ok=True)
     if args.pdb != '':
         pdb_id = args.pdb.split('_')
         chains = pdb_id[1:]
