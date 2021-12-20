@@ -51,7 +51,7 @@ def extractPDB(
     parser = PDBParser(QUIET=True)
     struct = parser.get_structure(infilename, infilename)
     model = Selection.unfold_entities(struct, "M")[0]
-    chains = Selection.unfold_entities(struct, "C")
+    # chains = Selection.unfold_entities(struct, "C")
     # Select residues to extract and build new structure
     structBuild = StructureBuilder.StructureBuilder()
     structBuild.init_structure("output")
@@ -66,7 +66,7 @@ def extractPDB(
 
     for chain in model:
         if (
-            chain_ids == None
+            chain_ids is None
             or chain.get_id() in chain_ids
         ):
             structBuild.init_chain(chain.get_id())
@@ -104,7 +104,7 @@ def protonate(in_pdb_file, out_pdb_file):
 
 
 
-def get_single(pdb_id: str,chains: list):
+def get_single(pdb_id: str, chains: list):
     protonated_file = pdb_dir/f"{pdb_id}.pdb"
     if not protonated_file.exists():
         # Download pdb 
@@ -118,6 +118,13 @@ def get_single(pdb_id: str,chains: list):
     pdb_filename = protonated_file
 
     # Extract chains of interest.
+    if not chains:
+        out_filename = pdb_dir/f"{pdb_id}.pdb"
+        extractPDB(pdb_filename, str(out_filename))
+        protein = load_structure_np(out_filename,center=False)
+        np.save(npy_dir / f"{pdb_id}_atomxyz", protein["xyz"])
+        np.save(npy_dir / f"{pdb_id}_atomtypes", protein["types"])
+        return
     for chain in chains:
         out_filename = pdb_dir/f"{pdb_id}_{chain}.pdb"
         extractPDB(pdb_filename, str(out_filename), chain)
