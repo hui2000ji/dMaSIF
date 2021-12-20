@@ -123,47 +123,47 @@ def load_protein_npy(pdb_id, data_dir, center=False, single_pdb=False):
     """Loads a protein surface mesh and its features"""
 
     # Load the data, and read the connectivity information:
-    triangles = (
-        None
-        if single_pdb
-        else inttensor(np.load(data_dir / (pdb_id + "_triangles.npy"))).T
-    )
-    # Normalize the point cloud, as specified by the user:
-    points = None if single_pdb else tensor(np.load(data_dir / (pdb_id + "_xyz.npy")))
-    center_location = None if single_pdb else torch.mean(points, axis=0, keepdims=True)
+    # triangles = (
+    #     None
+    #     if single_pdb
+    #     else inttensor(np.load(data_dir / (pdb_id + "_triangles.npy"))).T
+    # )
+    # # Normalize the point cloud, as specified by the user:
+    # points = None if single_pdb else tensor(np.load(data_dir / (pdb_id + "_xyz.npy")))
+    # center_location = None if single_pdb else torch.mean(points, axis=0, keepdims=True)
 
     atom_coords = tensor(np.load(data_dir / (pdb_id + "_atomxyz.npy")))
     atom_types = tensor(np.load(data_dir / (pdb_id + "_atomtypes.npy")))
 
-    if center:
-        points = points - center_location
-        atom_coords = atom_coords - center_location
+    # if center:
+    #     points = points - center_location
+    #     atom_coords = atom_coords - center_location
 
-    # Interface labels
-    iface_labels = (
-        None
-        if single_pdb
-        else tensor(np.load(data_dir / (pdb_id + "_iface_labels.npy")).reshape((-1, 1)))
-    )
+    # # Interface labels
+    # iface_labels = (
+    #     None
+    #     if single_pdb
+    #     else tensor(np.load(data_dir / (pdb_id + "_iface_labels.npy")).reshape((-1, 1)))
+    # )
 
-    # Features
-    chemical_features = (
-        None if single_pdb else tensor(np.load(data_dir / (pdb_id + "_features.npy")))
-    )
+    # # Features
+    # chemical_features = (
+    #     None if single_pdb else tensor(np.load(data_dir / (pdb_id + "_features.npy")))
+    # )
 
-    # Normals
-    normals = (
-        None if single_pdb else tensor(np.load(data_dir / (pdb_id + "_normals.npy")))
-    )
+    # # Normals
+    # normals = (
+    #     None if single_pdb else tensor(np.load(data_dir / (pdb_id + "_normals.npy")))
+    # )
 
     protein_data = Data(
-        xyz=points,
-        face=triangles,
-        chemical_features=chemical_features,
-        y=iface_labels,
-        normals=normals,
-        center_location=center_location,
-        num_nodes=None if single_pdb else points.shape[0],
+        # xyz=points,
+        # face=triangles,
+        # chemical_features=chemical_features,
+        # y=iface_labels,
+        # normals=normals,
+        # center_location=center_location,
+        # num_nodes=None if single_pdb else points.shape[0],
         atom_coords=atom_coords,
         atom_types=atom_types,
     )
@@ -248,18 +248,18 @@ def load_protein_pair(pdb_id, data_dir,single_pdb=False):
     y_p2 = p2["y"]
 
     protein_pair_data = PairData(
-        xyz_p1=p1["xyz"],
-        xyz_p2=p2["xyz"],
-        face_p1=p1["face"],
-        face_p2=p2["face"],
-        chemical_features_p1=p1["chemical_features"],
-        chemical_features_p2=p2["chemical_features"],
-        y_p1=y_p1,
-        y_p2=y_p2,
-        normals_p1=p1["normals"],
-        normals_p2=p2["normals"],
-        center_location_p1=p1["center_location"],
-        center_location_p2=p2["center_location"],
+        # xyz_p1=p1["xyz"],
+        # xyz_p2=p2["xyz"],
+        # face_p1=p1["face"],
+        # face_p2=p2["face"],
+        # chemical_features_p1=p1["chemical_features"],
+        # chemical_features_p2=p2["chemical_features"],
+        # y_p1=y_p1,
+        # y_p2=y_p2,
+        # normals_p1=p1["normals"],
+        # normals_p2=p2["normals"],
+        # center_location_p1=p1["center_location"],
+        # center_location_p2=p2["center_location"],
         atom_coords_p1=p1["atom_coords"],
         atom_coords_p2=p2["atom_coords"],
         atom_types_p1=p1["atom_types"],
