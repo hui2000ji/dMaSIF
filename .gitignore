@@ -19,3 +19,5 @@ data_analysis/.ipynb_checkpoints/
 __pycache__
 *.pdb
 *.npy
+*.vtk
+*.tar.gz

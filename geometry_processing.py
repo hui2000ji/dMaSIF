@@ -8,6 +8,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 # from matplotlib import pyplot as plt
+from pykeops.torch import LazyTensor
 from pykeops.torch.cluster import grid_cluster, cluster_ranges_centroids, from_matrix
 from math import pi, sqrt
 

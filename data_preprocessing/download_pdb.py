@@ -151,9 +151,10 @@ if __name__ == '__main__':
         with open(args.pdb_list) as f:
             pdb_list = f.read().splitlines()
         for pdb_id in tqdm(pdb_list):
-           pdb_id = pdb_id.split('_')
-           chains = pdb_id[1:]
-           pdb_id = pdb_id[0]
-           get_single(pdb_id,chains)
+            # pdb_id = pdb_id.split('_')
+            # chains = pdb_id[1:]
+            # pdb_id = pdb_id[0]
+            # get_single(pdb_id,chains)
+            get_single(pdb_id, [])
     else:
         raise ValueError('Must specify PDB or PDB list') 

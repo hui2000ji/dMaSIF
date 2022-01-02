@@ -10,6 +10,7 @@ import math
 from tqdm import tqdm
 from geometry_processing import save_vtk
 from helper import numpy, diagonal_ranges
+from pykeops.torch import LazyTensor
 import time
 
 
@@ -73,12 +74,11 @@ def process_single(protein_pair, chain_idx=1):
     return P
 
 
-def save_protein_batch_single(protein_pair_id, P, save_path, pdb_idx):
+def save_protein_batch_single(protein_pair_id, P, save_path, pdb_idx, score):
 
-    protein_pair_id = protein_pair_id.split("_")
-    pdb_id = protein_pair_id[0] + "_" + protein_pair_id[pdb_idx]
-
-    batch = P["batch"]
+    # protein_pair_id = protein_pair_id.split("_")
+    # pdb_id = protein_pair_id[0] + "_" + protein_pair_id[pdb_idx]
+    pdb_id = protein_pair_id
 
     xyz = P["xyz"]
 
@@ -91,14 +91,14 @@ def save_protein_batch_single(protein_pair_id, P, save_path, pdb_idx):
 
     labels = P["labels"].view(-1, 1) if P["labels"] is not None else 0.0 * predictions
 
-    coloring = torch.cat([inputs, embedding, predictions, labels], axis=1)
+    coloring = torch.cat([inputs, embedding, predictions, labels, score], axis=1)
 
     save_vtk(str(save_path / pdb_id) + f"_pred_emb{emb_id}", xyz, values=coloring)
-    np.save(str(save_path / pdb_id) + "_predcoords", numpy(xyz))
+    np.save(str(save_path / pdb_id) + f"_predcoords_emb{emb_id}", numpy(xyz))
     np.save(str(save_path / pdb_id) + f"_predfeatures_emb{emb_id}", numpy(coloring))
 
 
-def project_iface_labels(P, threshold=2.0):
+def project_iface_labels(P, threshold=2.0): 
 
     queries = P["xyz"]
     batch_queries = P["batch"]
@@ -370,12 +370,31 @@ def iterate(
                     summary_writer.add_histogram(f"Input features/{d}", features)
 
             if save_path is not None:
+                emb1 = P1['embedding_1']
+                emb2 = P2['embedding_2']
+                x = LazyTensor(emb1[:, None, :])  # (N, 1, 16)
+                y = LazyTensor(emb2[None, :, :])  # (1, M, 16)
+                D_ij = (x * y).sum(-1)  # (N, M, 1) squared distances
+                score1_12 = D_ij.max(1)  # (N, 1)
+                score2_12 = D_ij.max(0)  # (M, 1)
+
+                emb1 = P1['embedding_2']
+                emb2 = P2['embedding_1']
+                x = LazyTensor(emb1[:, None, :])  # (N, 1, 16)
+                y = LazyTensor(emb2[None, :, :])  # (1, M, 16)
+                D_ij = (x * y).sum(-1)  # (N, M, 1) squared distances
+                score1_21 = D_ij.max(1)  # (N, 1)
+                score2_21 = D_ij.max(0)  # (M, 1)
+
+                score1 = torch.cat([score1_12, score1_21], dim=-1)
+                score2 = torch.cat([score2_12, score2_21], dim=-1)  
+
                 save_protein_batch_single(
-                    batch_ids[protein_it], P1, save_path, pdb_idx=1
+                    batch_ids[protein_it], P1, save_path, pdb_idx=1, score=score1
                 )
                 if not args.single_protein:
                     save_protein_batch_single(
-                        batch_ids[protein_it], P2, save_path, pdb_idx=2
+                        batch_ids[protein_it], P2, save_path, pdb_idx=2, score=score2
                     )
 
             try:
